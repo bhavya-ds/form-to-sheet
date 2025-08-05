@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f8fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 320px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: #222;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+    }
+
+    button {
+      background: #2e7d32;
+      color: white;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1b5e20;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Contact Us</h2>
+    <form id="leadForm">
+      <div class="form-group">
+        <label for="field1">Name</label>
+        <input type="text" id="field1" name="name" placeholder="Your name" />
+      </div>
+
+      <div class="form-group">
+        <label for="field2">Email</label>
+        <input type="email" id="field2" name="email" placeholder="Your email" />
+      </div>
+
+      <div class="form-group">
+        <label for="country">Country</label>
+        <select id="country" name="country">
+          <option value="">Select</option>
+          <option value="India">India</option>
+          <option value="USA">USA</option>
+          <option value="UK">UK</option>
+          <option value="Germany">Germany</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="+91 9876543210" pattern="[0-9]{10,15}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="problem">Your Problem</label>
+        <textarea id="problem" name="problem" placeholder="Tell us more..." rows="4"></textarea>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const webhookURL = "https://script.google.com/macros/s/AKfycbwxvKYUcQVKaMWPNIG6P6jJikyODLyoqaWRLS2SlZfJugF7c6FVew58QfwjTY6q6hSrRA/exec"; // replace with yours
+
+    function sendEvent(eventType, payload = {}) {
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventType, ...payload })
+      });
+    }
+
+    // Field-level listeners
+    document.getElementById("field1").addEventListener("blur", () => {
+      sendEvent("field_1_completed", { field: "name" });
+    });
+
+    document.getElementById("field2").addEventListener("blur", () => {
+      sendEvent("field_2_completed", { field: "email" });
+    });
+
+    document.getElementById("phone").addEventListener("blur", () => {
+      sendEvent("phone_completed", { field: "phone" });
+    });
+
+    document.getElementById("country").addEventListener("change", () => {
+      sendEvent("country_selected", { value: document.getElementById("country").value });
+    });
+
+    document.getElementById("problem").addEventListener("blur", () => {
+      sendEvent("problem_entered", {});
+    });
+
+    // Drop-off detection
+    let formSubmitted = false;
+    document.getElementById("leadForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      formSubmitted = true;
+      sendEvent("form_submitted");
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if (!formSubmitted) {
+        sendEvent("form_dropped_off");
+      }
+    });
+  </script>
+</body>
+</html>
+
