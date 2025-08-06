@@ -107,38 +107,51 @@
   </div>
 
   <script>
-    const webhookURL = "https://form-to-sheet-js.onrender.com/hook"; // replace with yours
+    const webhookURL = "https://form-to-sheet-js.onrender.com/hook"; // Replace with your endpoint
 
     function sendEvent(eventType, payload = {}) {
       fetch(webhookURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventType, ...payload })
+        body: JSON.stringify({ eventType, ...payload }),
       });
     }
 
-    // Field-level listeners
     document.getElementById("field1").addEventListener("blur", () => {
-      sendEvent("field_1_completed", { field: "name" });
+      sendEvent("field_1_completed", {
+        field: "name",
+        value: document.getElementById("field1").value
+      });
     });
 
     document.getElementById("field2").addEventListener("blur", () => {
-      sendEvent("field_2_completed", { field: "email" });
+      sendEvent("field_2_completed", {
+        field: "email",
+        value: document.getElementById("field2").value
+      });
     });
 
     document.getElementById("phone").addEventListener("blur", () => {
-      sendEvent("phone_completed", { field: "phone" });
+      sendEvent("phone_completed", {
+        field: "phone",
+        value: document.getElementById("phone").value
+      });
     });
 
     document.getElementById("country").addEventListener("change", () => {
-      sendEvent("country_selected", { value: document.getElementById("country").value });
+      sendEvent("country_selected", {
+        field: "country",
+        value: document.getElementById("country").value
+      });
     });
 
     document.getElementById("problem").addEventListener("blur", () => {
-      sendEvent("problem_entered", {});
+      sendEvent("problem_entered", {
+        field: "problem",
+        value: document.getElementById("problem").value
+      });
     });
 
-    // Drop-off detection
     let formSubmitted = false;
     document.getElementById("leadForm").addEventListener("submit", (e) => {
       e.preventDefault();
